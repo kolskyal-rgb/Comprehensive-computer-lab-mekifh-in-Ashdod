@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול מעבדות מקיף ה' אשדוד</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Heebo:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Watercolor & Sea theme palette */
+            --water-light: #e0f2f1;
+            --water-blue: #b2ebf2;
+            --water-teal: #4dd0e1;
+            --water-green: #26a69a;
+            --water-deep: #00695c;
+            
+            /* Lab specific watercolor colors */
+            --lab-color-1: rgba(178, 235, 242, 0.4); /* Light Blue */
+            --lab-color-2: rgba(200, 230, 201, 0.4); /* Light Green */
+            --lab-color-3: rgba(255, 249, 196, 0.4); /* Light Yellow */
+            --lab-color-4: rgba(225, 190, 231, 0.4); /* Light Purple */
+            --lab-color-5: rgba(255, 204, 188, 0.4); /* Light Peach */
+            
+            /* Status colors */
+            --status-free: #81c784; /* Soft green */
+            --status-occupied: #ffb74d; /* Soft orange */
+            --status-error: #ef5350; /* Red for errors/reports */
+            
+            /* Typography & Paper */
+            --text-main: #263238;
+            --paper-bg: #fafafa;
+            
+            /* Organic border radius */
+            --organic-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            --organic-radius-alt: 15px 255px 15px 225px/225px 15px 255px 15px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            color: var(--text-main);
+            background-color: var(--paper-bg);
+            /* Watercolor background effect */
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(77, 208, 225, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(38, 166, 154, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(0, 105, 92, 0.05) 0%, transparent 60%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Amatic SC', cursive;
+            color: var(--water-deep);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        h2 { font-size: 2.5rem; }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--water-deep);
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .organic-box {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(5px);
+            border: 2px solid var(--water-teal);
+            border-radius: var(--organic-radius);
+            box-shadow: 0 8px 20px rgba(0, 105, 92, 0.08);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="text"], input[type="time"], select, textarea {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border: 2px solid var(--water-blue);
+            border-radius: var(--organic-radius-alt);
+            font-family: 'Heebo', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            background: rgba(255,255,255,0.9);
+            transition: border-color 0.3s;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--water-green);
+        }
+
+        button {
+            font-family: 'Heebo', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            background-color: var(--water-green);
+            border-radius: var(--organic-radius);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            background-color: var(--water-deep);
+        }
+
+        #login-section, #dashboard-section {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        #login-section {
+            max-width: 400px;
+            margin-top: 10vh;
+            text-align: center;
+        }
+
+        .labs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .labs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .lab-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.7); 
+        }
+
+        .lab-bg-1 { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, var(--lab-color-1) 100%); border-color: #80deea; }
+        .lab-bg-2 { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, var(--lab-color-2) 100%); border-color: #a5d6a7; }
+        .lab-bg-3 { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, var(--lab-color-3) 100%); border-color: #fff59d; }
+        .lab-bg-4 { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, var(--lab-color-4) 100%); border-color: #ce93d8; }
+        .lab-bg-5 { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, var(--lab-color-5) 100%); border-color: #ffab91; }
+
+        .lab-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 25px rgba(0, 105, 92, 0.12);
+        }
+
+        .lab-title {
+            font-size: 1.5rem;
+            color: var(--water-deep);
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .lab-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: var(--organic-radius-alt);
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .status-free { background-color: var(--status-free); }
+        .status-occupied { background-color: var(--status-occupied); }
+
+        .lab-actions {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-cancel { background-color: var(--status-occupied); }
+        .btn-grab { background-color: var(--status-free); }
+        .btn-waitlist { background-color: var(--water-teal); }
+        .btn-report { background-color: var(--status-error); }
+        .btn-report:hover { background-color: #c62828; }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--water-deep);
+            border: 2px solid var(--water-teal);
+        }
+        .btn-outline:hover {
+            background-color: var(--water-light);
+            color: var(--water-deep);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 30, 40, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--paper-bg);
+            max-width: 500px;
+            width: 90%;
+            padding: 30px;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--water-deep);
+            font-size: 1.5rem;
+            box-shadow: none;
+            padding: 0;
+        }
+        .close-btn:hover { background: none; box-shadow: none; transform: scale(1.1); }
+
+        .share-text-box {
+            background: var(--water-light);
+            border: 1px dashed var(--water-teal);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            text-align: right;
+            white-space: pre-wrap;
+        }
+
+        .schedule-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 400px;
+        }
+
+        th, td {
+            border: 1px solid var(--water-blue);
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: var(--water-light);
+            color: var(--water-deep);
+            font-weight: 600;
+        }
+
+        td { background-color: rgba(255,255,255,0.7); }
+        .slot-free { color: var(--status-free); font-weight: bold; }
+        .slot-taken { color: var(--text-main); }
+    </style>
+</head>
+<body>
+    <div id="login-section" class="organic-box">
+        <h1>ברוכים הבאים</h1>
+        <p>מערכת ניהול מעבדות מקיף ה'</p>
+        <div style="margin-top: 20px;">
+            <label for="teacher-name-input">אנא הזן את שמך לכניסה:</label>
+            <input type="text" id="teacher-name-input" placeholder="לדוגמה: ישראל ישראלי">
+            <button onclick="handleLogin()">היכנס למערכת</button>
+        </div>
+    </div>
+
+    <div id="dashboard-section" style="display: none;">
+        <h1>ניהול מעבדות מקיף ה' אשדוד</h1>
+        <div class="subtitle" id="greeting-msg">שלום, מורה</div>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button class="btn-outline" onclick="logout()" style="font-size: 0.8rem; padding: 5px 15px;">החלף משתמש / התנתק</button>
+        </div>
+        
+        <div id="labs-container" class="labs-grid">
+            <!-- Labs will be rendered here by JS -->
+        </div>
+    </div>
+
+    <!-- Cancel Lab Modal -->
+    <div id="modal-cancel" class="modal-overlay">
+        <div class="modal-content organic-box">
+            <button class="close-btn" onclick="closeModal('modal-cancel')">&times;</button>
+            <h2>ביטול שיעור במעבדה</h2>
+            <p>מעבדה: <strong id="cancel-lab-name"></strong></p>
+            <div style="margin-top: 20px;">
+                <label>החל מאיזו שעה המעבדה מתפנה?</label>
+                <input type="time" id="cancel-time">
+            </div>
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="confirmCancel()">אישור ושחרור מעבדה</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Waitlist Lab Modal -->
+    <div id="modal-waitlist" class="modal-overlay">
+        <div class="modal-content organic-box">
+            <button class="close-btn" onclick="closeModal('modal-waitlist')">&times;</button>
+            <h2>הרשמה להמתנה</h2>
+            <p>מעבדה: <strong id="waitlist-lab-name"></strong></p>
+            <p style="margin-top: 15px;">האם ברצונך להירשם להמתנה למעבדה זו להיום?</p>
+            <p style="font-size: 0.9rem; color: #666;">אם המעבדה תתפנה, המורה המבטל יקבל התראה לעדכן אותך בוואטסאפ.</p>
+            <div style="margin-top: 20px; text-align: center;">
+                <button onclick="confirmWaitlist()">אשר הרשמה 📅</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="modal-share" class="modal-overlay">
+        <div class="modal-content organic-box">
+            <button class="close-btn" onclick="closeModal('modal-share')">&times;</button>
+            <h2 id="share-title">המעבדה התפנתה!</h2>
+            <p id="share-description" style="text-align: center; margin-bottom: 10px;">שתף את ההודעה הבאה:</p>
+            
+            <div id="share-text" class="share-text-box"></div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+                <button class="btn-outline" onclick="copyShareText()">העתק הודעה</button>
+                <button onclick="sendWhatsApp('share-text')">שלח לוואטסאפ 💬</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div id="modal-schedule" class="modal-overlay">
+        <div class="modal-content organic-box" style="max-width: 800px;">
+            <button class="close-btn" onclick="closeModal('modal-schedule')">&times;</button>
+            <h2 id="schedule-lab-name">מפת שיבוצים</h2>
+            <p style="text-align: center; font-size: 0.9rem;">נתוני דמה להדגמה - ניתן לחבר נתוני אקסל בעתיד</p>
+            
+            <div class="schedule-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>שעה</th>
+                            <th>ראשון</th>
+                            <th>שני</th>
+                            <th>שלישי</th>
+                            <th>רביעי</th>
+                            <th>חמישי</th>
+                            <th>שישי</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>08:00</td><td class="slot-taken">ט'2 - גיאוגרפיה</td><td class="slot-free">פנוי</td><td class="slot-taken">י'1 - מדעי המחשב</td><td class="slot-free">פנוי</td><td class="slot-taken">ח'4 - מדעים</td><td class="slot-free">פנוי</td></tr>
+                        <tr><td>09:00</td><td class="slot-taken">ט'2 - גיאוגרפיה</td><td class="slot-taken">י"א - מגמה</td><td class="slot-taken">י'1 - מדעי המחשב</td><td class="slot-taken">ז'3 - אנגלית</td><td class="slot-free">פנוי</td><td class="slot-free">פנוי</td></tr>
+                        <tr><td>10:00</td><td class="slot-free">פנוי</td><td class="slot-taken">י"א - מגמה</td><td class="slot-free">פנוי</td><td class="slot-taken">ז'3 - אנגלית</td><td class="slot-taken">ט'5 - היסטוריה</td><td class="slot-taken">י"ב - פרויקט</td></tr>
+                        <tr><td>11:00</td><td class="slot-taken">ח'1 - מתמטיקה</td><td class="slot-free">פנוי</td><td class="slot-taken">י"ב - הנדסת תוכנה</td><td class="slot-free">פנוי</td><td class="slot-taken">ט'5 - היסטוריה</td><td class="slot-taken">י"ב - פרויקט</td></tr>
+                        <tr><td>12:00</td><td class="slot-taken">ח'1 - מתמטיקה</td><td class="slot-taken">י'3 - סייבר</td><td class="slot-taken">י"ב - הנדסת תוכנה</td><td class="slot-taken">י"א - אזרחות</td><td class="slot-free">פנוי</td><td class="slot-free">פנוי</td></tr>
+                        <tr><td>13:00</td><td class="slot-free">פנוי</td><td class="slot-taken">י'3 - סייבר</td><td class="slot-free">פנוי</td><td class="slot-taken">י"א - אזרחות</td><td class="slot-taken">ח'2 - מדעים</td><td class="slot-free">פנוי</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Issue Modal -->
+    <div id="modal-report" class="modal-overlay">
+        <div class="modal-content organic-box">
+            <button class="close-btn" onclick="closeModal('modal-report')">&times;</button>
+            <h2>דיווח על תקלה בציוד</h2>
+            <p>מעבדה: <strong id="report-lab-name"></strong></p>
+            
+            <div style="margin-top: 15px;">
+                <label for="issue-type">סוג התקלה:</label>
+                <select id="issue-type">
+                    <option value="מחשב לא עובד">מחשב לא עובד (ציין מספר עמדה)</option>
+                    <option value="אין חיבור לאינטרנט">אין חיבור לאינטרנט</option>
+                    <option value="בעיה במקרן">בעיה במקרן / מסך חכם</option>
+                    <option value="ציוד חסר (עכבר/מקלדת)">ציוד חסר (עכבר/מקלדת)</option>
+                    <option value="אחר">אחר</option>
+                </select>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <label for="issue-desc">פירוט התקלה:</label>
+                <textarea id="issue-desc" placeholder="פרט כאן את הבעיה, למשל: מחשב מס' 12 לא נדלק..."></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+                <button class="btn-report" onclick="submitReportWhatsApp()">שלח דיווח לטכנאי בוואטסאפ</button>
+                <button class="btn-outline" onclick="submitReportEmail()">שלח במייל</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const LOCAL_STORAGE_USER = 'labApp_teacherName';
+        const LOCAL_STORAGE_LABS = 'labApp_labsState';
+        
+        // ==============================================================================
+        // 🔴 כאן את מכניסה את הפרטים של טכנאי המחשבים של בית הספר 🔴
+        // ==============================================================================
+        // 1. הגדרת אימייל: החליפי את המייל שמופיע כאן בכתובת המייל האמיתית של הטכנאי/תמיכה
+        const TECHNICIAN_EMAIL = 'israel.israeli@gmail.com'; 
+        
+        // 2. הגדרת מספר טלפון לוואטסאפ: 
+        // הקלידי את המספר עם קידומת בינלאומית (972) ללא פלוס וללא אפס בהתחלה.
+        // לדוגמה, אם המספר הוא 050-1234567, כתבי '972501234567'
+        const TECHNICIAN_PHONE = '972501234567'; 
+        // ==============================================================================
+
+        // Initial Labs Data Structure
+        const defaultLabs = [
+            { id: 1, name: "מעבדה 1 - שכבה ח' (32 מחשבים)", status: "occupied", waitlist: [] },
+            { id: 2, name: "מעבדה 2 - קומה ג' (18 מחשבים)", status: "occupied", waitlist: [] },
+            { id: 3, name: "מעבדה 3 - חדר אומנות (15 מחשבים)", status: "occupied", waitlist: [] },
+            { id: 4, name: "מעבדה 4 - מכללה (12 מחשבים)", status: "occupied", waitlist: [] },
+            { id: 5, name: "מעבדה 5 - כרומבוקים", status: "occupied", waitlist: [] }
+        ];
+
+        // State Variables
+        let currentTeacher = '';
+        let labsState = [];
+        let activeActionLabId = null; 
+
+        // Helper function to safely get DOM elements
+        const getEl = (id) => document.getElementById(id);
+
+        function initApp() {
+            // Load User
+            currentTeacher = localStorage.getItem(LOCAL_STORAGE_USER);
+            
+            // Load Labs State
+            const savedLabs = localStorage.getItem(LOCAL_STORAGE_LABS);
+            if (savedLabs) {
+                labsState = JSON.parse(savedLabs);
+            } else {
+                labsState = JSON.parse(JSON.stringify(defaultLabs)); 
+                saveLabsState();
+            }
+
+            if (currentTeacher) {
+                showDashboard();
+            } else {
+                showLogin();
+            }
+        }
+
+        function handleLogin() {
+            const nameInput = getEl('teacher-name-input');
+            if(!nameInput) return;
+            const name = nameInput.value.trim();
+            if (name === '') {
+                alert('אנא הזן שם תקין.');
+                return;
+            }
+            currentTeacher = name;
+            localStorage.setItem(LOCAL_STORAGE_USER, currentTeacher);
+            showDashboard();
+        }
+
+        function logout() {
+            localStorage.removeItem(LOCAL_STORAGE_USER);
+            currentTeacher = '';
+            const nameInput = getEl('teacher-name-input');
+            if(nameInput) nameInput.value = '';
+            showLogin();
+        }
+
+        function showLogin() {
+            const loginSec = getEl('login-section');
+            const dashboardSec = getEl('dashboard-section');
+            if(loginSec && dashboardSec) {
+                loginSec.style.display = 'block';
+                dashboardSec.style.display = 'none';
+            }
+        }
+
+        function showDashboard() {
+            const loginSec = getEl('login-section');
+            const dashboardSec = getEl('dashboard-section');
+            const greeting = getEl('greeting-msg');
+            
+            if(loginSec && dashboardSec && greeting) {
+                loginSec.style.display = 'none';
+                dashboardSec.style.display = 'block';
+                greeting.textContent = `שלום, ${currentTeacher}`;
+                renderLabs();
+            }
+        }
+
+        function saveLabsState() {
+            localStorage.setItem(LOCAL_STORAGE_LABS, JSON.stringify(labsState));
+        }
+
+        function renderLabs() {
+            const container = getEl('labs-container');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            labsState.forEach((lab, index) => {
+                const card = document.createElement('div');
+                const bgClass = `lab-bg-${(index % 5) + 1}`;
+                card.className = `lab-card organic-box ${bgClass}`;
+                
+                const isFree = lab.status === 'free';
+                const statusText = isFree ? 'פנוי' : 'תפוס';
+                const statusClass = isFree ? 'status-free' : 'status-occupied';
+                
+                const isWaiting = lab.waitlist && lab.waitlist.includes(currentTeacher);
+                const waitlistText = isWaiting ? 'ממתין/ה 📅' : 'הרשם להמתנה 📅';
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="lab-title">${lab.name}</div>
+                        <div class="lab-status ${statusClass}">${statusText}</div>
+                        ${lab.waitlist && lab.waitlist.length > 0 ? `<div style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">${lab.waitlist.length} מורים בהמתנה</div>` : ''}
+                    </div>
+                    <div class="lab-actions">
+                        ${isFree 
+                            ? `<button class="btn-grab" onclick="grabLab(${lab.id})">תפוס מעבדה</button>` 
+                            : `<button class="btn-cancel" onclick="openCancelModal(${lab.id})">ביטול שיעור</button>
+                               <button class="btn-waitlist" onclick="openWaitlistModal(${lab.id})" ${isWaiting ? 'disabled style="opacity: 0.6; cursor: not-allowed;"' : ''}>${waitlistText}</button>`
+                        }
+                        <button class="btn-outline" onclick="openScheduleModal(${lab.id})">צפה במפת שיבוצים</button>
+                        <button class="btn-report" onclick="openReportModal(${lab.id})">דווח על תקלה 🛠️</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openModal(modalId) {
+            const modal = getEl(modalId);
+            if(modal) modal.classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            const modal = getEl(modalId);
+            if(modal) modal.classList.remove('active');
+        }
+
+        function openCancelModal(labId) {
+            activeActionLabId = labId;
+            const lab = labsState.find(l => l.id === labId);
+            const labNameEl = getEl('cancel-lab-name');
+            if(labNameEl) labNameEl.textContent = lab.name;
+            
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            const cancelTimeEl = getEl('cancel-time');
+            if(cancelTimeEl) cancelTimeEl.value = `${hours}:${mins}`;
+            
+            openModal('modal-cancel');
+        }
+
+        function confirmCancel() {
+            if (!activeActionLabId) return;
+            
+            const timeEl = getEl('cancel-time');
+            const time = timeEl ? timeEl.value : '';
+            const labIndex = labsState.findIndex(l => l.id === activeActionLabId);
+            
+            if (labIndex !== -1) {
+                labsState[labIndex].status = 'free';
+                
+                const labName = labsState[labIndex].name;
+                let shareText = '';
+                
+                const shareTitle = getEl('share-title');
+                const shareDesc = getEl('share-description');
+
+                if (labsState[labIndex].waitlist && labsState[labIndex].waitlist.length > 0) {
+                    const nextInLine = labsState[labIndex].waitlist.shift(); 
+                    if(shareTitle) shareTitle.textContent = `יש ממתינים למעבדה!`;
+                    if(shareDesc) shareDesc.textContent = `שלח/י הודעה ל-${nextInLine} שהמעבדה התפנתה עבורו/ה:`;
+                    shareText = `היי ${nextInLine}, ראיתי שנרשמת להמתנה ל${labName}.\nביטלתי את השיעור שלי החל משעה ${time}, המעבדה שלך! 📅 🎉\n\n- ${currentTeacher}`;
+                } else {
+                    if(shareTitle) shareTitle.textContent = `המעבדה התפנתה!`;
+                    if(shareDesc) shareDesc.textContent = `הודעה נוצרה. שתף אותה עם הצוות כדי שיידעו:`;
+                    shareText = `היי צוות, ביטלתי שיעור ב${labName} החל משעה ${time}.\nהמעבדה פנויה לשימושכם.\n\n- ${currentTeacher}`;
+                }
+                
+                saveLabsState();
+                renderLabs();
+                
+                const shareTextEl = getEl('share-text');
+                if(shareTextEl) shareTextEl.textContent = shareText;
+                
+                closeModal('modal-cancel');
+                openModal('modal-share');
+            }
+        }
+
+        function openWaitlistModal(labId) {
+            activeActionLabId = labId;
+            const lab = labsState.find(l => l.id === labId);
+            const wlName = getEl('waitlist-lab-name');
+            if(wlName) wlName.textContent = lab.name;
+            openModal('modal-waitlist');
+        }
+
+        function confirmWaitlist() {
+            if (!activeActionLabId) return;
+            const labIndex = labsState.findIndex(l => l.id === activeActionLabId);
+            
+            if (labIndex !== -1) {
+                if (!labsState[labIndex].waitlist) {
+                    labsState[labIndex].waitlist = [];
+                }
+                if (!labsState[labIndex].waitlist.includes(currentTeacher)) {
+                    labsState[labIndex].waitlist.push(currentTeacher);
+                    saveLabsState();
+                    renderLabs();
+                }
+                closeModal('modal-waitlist');
+                alert(`נרשמת בהצלחה להמתנה עבור ${labsState[labIndex].name}. אם המעבדה תתפנה, המורה המבטל יקבל התראה לעדכן אותך.`);
+            }
+        }
+
+        function grabLab(labId) {
+            const labIndex = labsState.findIndex(l => l.id === labId);
+            if (labIndex !== -1) {
+                labsState[labIndex].status = 'occupied';
+                saveLabsState();
+                renderLabs();
+            }
+        }
+
+        function openScheduleModal(labId) {
+            const lab = labsState.find(l => l.id === labId);
+            const schedName = getEl('schedule-lab-name');
+            if(schedName) schedName.textContent = `לוז: ${lab.name}`;
+            openModal('modal-schedule');
+        }
+
+        function openReportModal(labId) {
+            activeActionLabId = labId;
+            const lab = labsState.find(l => l.id === labId);
+            const reportNameEl = getEl('report-lab-name');
+            if(reportNameEl) reportNameEl.textContent = lab.name;
+            
+            // Clear previous form data
+            const typeEl = getEl('issue-type');
+            const descEl = getEl('issue-desc');
+            if(typeEl) typeEl.selectedIndex = 0;
+            if(descEl) descEl.value = '';
+            
+            openModal('modal-report');
+        }
+
+        function getReportMessage() {
+            if (!activeActionLabId) return '';
+            const lab = labsState.find(l => l.id === activeActionLabId);
+            const issueType = getEl('issue-type') ? getEl('issue-type').value : '';
+            const issueDesc = getEl('issue-desc') ? getEl('issue-desc').value : '';
+            
+            return `*דיווח תקלה במעבדה*\nמורה מדווח: ${currentTeacher}\nמיקום: ${lab.name}\nסוג התקלה: ${issueType}\nפירוט: ${issueDesc || 'לא צוין פירוט'}`;
+        }
+
+        function submitReportWhatsApp() {
+            const text = getReportMessage();
+            if (!text) return;
+            const encodedText = encodeURIComponent(text);
+            // Updated to use the specific phone number defined above
+            const whatsappUrl = `https://wa.me/${TECHNICIAN_PHONE}?text=${encodedText}`;
+            window.open(whatsappUrl, '_blank');
+            closeModal('modal-report');
+        }
+
+        function submitReportEmail() {
+            const text = getReportMessage();
+            if (!text) return;
+            const encodedText = encodeURIComponent(text);
+            const mailtoUrl = `mailto:${TECHNICIAN_EMAIL}?subject=דיווח תקלה: ${currentTeacher}&body=${encodedText}`;
+            window.location.href = mailtoUrl;
+            closeModal('modal-report');
+        }
+
+        function copyShareText() {
+            const textEl = getEl('share-text');
+            if(!textEl) return;
+            const text = textEl.textContent;
+            
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('ההודעה הועתקה ללוח בהצלחה!');
+                }).catch(err => {
+                    fallbackCopyTextToClipboard(text);
+                });
+            } else {
+                fallbackCopyTextToClipboard(text);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('ההודעה הועתקה ללוח בהצלחה!');
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function sendWhatsApp(elementId) {
+            const textEl = getEl(elementId);
+            if(!textEl) return;
+            const text = textEl.textContent;
+            const encodedText = encodeURIComponent(text);
+            const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Run Initialization on load
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
