@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול מעבדות מקיף ה' אשדוד</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Heebo:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Watercolor & Sea theme palette */
+            --water-light: #e0f2f1;
+            --water-blue: #b2ebf2;
+            --water-teal: #4dd0e1;
+            --water-green: #26a69a;
+            --water-deep: #00695c;
+            
+            /* Lab specific watercolor colors */
+            --lab-color-1: rgba(178, 235, 242, 0.4); /* Light Blue */
+            --lab-color-2: rgba(200, 230, 201, 0.4); /* Light Green */
+            --lab-color-3: rgba(255, 249, 196, 0.4); /* Light Yellow */
+            --lab-color-4: rgba(225, 190, 231, 0.4); /* Light Purple */
+            --lab-color-5: rgba(255, 204, 188, 0.4); /* Light Peach */
+            
+            /* Status colors */
+            --status-free: #81c784; /* Soft green */
+            --status-occupied: #ffb74d; /* Soft orange */
+            
+            /* Typography & Paper */
+            --text-main: #263238;
+            --paper-bg: #fafafa;
+            
+            /* Organic border radius */
+            --organic-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+            --organic-radius-alt: 15px 255px 15px 225px/225px 15px 255px 15px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            color: var(--text-main);
+            background-color: var(--paper-bg);
+            /* Watercolor background effect */
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(77, 208, 225, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(38, 166, 154, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(0, 105, 92, 0.05) 0%, transparent 60%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Amatic SC', cursive;
+            color: var(--water-deep);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        h2 { font-size: 2.5rem; }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--water-deep);
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        /* Organic Shapes & Inputs */
+        .organic-box {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(5px);
+            border: 2px solid var(--water-teal);
+            border-radius: var(--organic-radius);
+            box-shadow: 0 8px 20px rgba(0, 105, 92, 0.08);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="text"], input[type="time"] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border: 2px solid var(--water-blue);
+            border-radius: var(--organic-radius-alt);
+            font-family: 'Heebo', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            background: rgba(255,255,255,0.9);
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--water-green);
+        }
+
+        button {
+            font-family: 'Heebo', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            background-color: var(--water-green);
+            border-radius: var(--organic-radius);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin: 5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            background-color: var(--water-deep);
+        }
+
+        #login-section, #dashboard-section {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        #login-section {
+            max-width: 400px;
+            margin-top: 10vh;
+            text-align: center;
+        }
+
+        /* Labs Grid */
+        .labs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .lab-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            /* Default background, will be overridden */
+            background-color: rgba(255, 255, 255, 0.7); 
+        }
+
+        /* Specific Lab Backgrounds */
+        .lab-bg-1 { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, var(--lab-color-1) 100%); border-color: #80deea; }
+        .lab-bg-2 { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, var(--lab-color-2) 100%); border-color: #a5d6a7; }
+        .lab-bg-3 { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, var(--lab-color-3) 100%); border-color: #fff59d; }
+        .lab-bg-4 { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, var(--lab-color-4) 100%); border-color: #ce93d8; }
+        .lab-bg-5 { background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, var(--lab-color-5) 100%); border-color: #ffab91; }
+
+        .lab-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 25px rgba(0, 105, 92, 0.12);
+        }
+
+        .lab-title {
+            font-size: 1.5rem;
+            color: var(--water-deep);
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .lab-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: var(--organic-radius-alt);
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .status-free { background-color: var(--status-free); }
+        .status-occupied { background-color: var(--status-occupied); }
+
+        .lab-actions {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-cancel { background-color: var(--status-occupied); }
+        .btn-grab { background-color: var(--status-free); }
+        .btn-outline {
+            background-color: transparent;
+            color: var(--water-deep);
+            border: 2px solid var(--water-teal);
+        }
+        .btn-outline:hover {
+            background-color: var(--water-light);
+            color: var(--water-deep);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 30, 40, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--paper-bg);
+            max-width: 500px;
+            width: 90%;
+            padding: 30px;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--water-deep);
+            font-size: 1.5rem;
+            box-shadow: none;
+            padding: 0;
+        }
+        .close-btn:hover { background: none; box-shadow: none; transform: scale(1.1); }
+
+        .share-text-box {
+            background: var(--water-light);
+            border: 1px dashed var(--water-teal);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            text-align: right;
+            white-space: pre-wrap;
+        }
+
+        /* Schedule Table */
+        .schedule-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 400px;
+        }
+
+        th, td {
+            border: 1px solid var(--water-blue);
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: var(--water-light);
+            color: var(--water-deep);
+            font-weight: 600;
+        }
+
+        td { background-color: rgba(255,255,255,0.7); }
+        .slot-free { color: var(--status-free); font-weight: bold; }
+        .slot-taken { color: var(--text-main); }
+
+        /* Download button styling */
+        .download-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: var(--water-deep);
+            z-index: 2000;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border-radius: 50px;
+        }
+        .download-btn:hover {
+            transform: scale(1.05);
+            background-color: var(--water-teal);
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="login-section" class="organic-box">
+        <h1>ברוכים הבאים</h1>
+        <p>מערכת ניהול מעבדות מקיף ה'</p>
+        <div style="margin-top: 20px;">
+            <label for="teacher-name-input">אנא הזן את שמך לכניסה:</label>
+            <input type="text" id="teacher-name-input" placeholder="לדוגמה: ישראל ישראלי">
+            <button onclick="handleLogin()">היכנס למערכת</button>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard-section" style="display: none;">
+        <header>
+            <h1>ניהול מעבדות מקיף ה' אשדוד</h1>
+            <div class="subtitle" id="greeting-msg">שלום, [שם מורה]</div>
+            <div style="text-align: center;">
+                <button class="btn-outline" style="padding: 5px 15px; font-size: 0.8rem;" onclick="logout()">החלף משתמש</button>
+            </div>
+        </header>
+
+        <main class="labs-grid" id="labs-container">
+            <!-- Lab Cards will be injected here by JS -->
+        </main>
+    </div>
+
+    <!-- Cancel Lesson Modal -->
+    <div id="modal-cancel" class="modal-overlay">
+        <div class="modal-content organic-box">
+            <button class="close-btn" onclick="closeModal('modal-cancel')">&times;</button>
+            <h2>ביטול שיעור במעבדה</h2>
+            <p id="cancel-lab-name" style="text-align: center; font-weight: bold; margin-bottom: 15px;"></p>
+            <label for="cancel-time">החל מאיזו שעה המעבדה פנויה?</label>
+            <input type="time" id="cancel-time" value="08:00">
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-cancel" onclick="confirmCancel()">אשר ביטול ופנה מעבדה</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Message Modal -->
+    <div id="modal-share" class="modal-overlay">
+        <div class="modal-content organic-box">
+            <button class="close-btn" onclick="closeModal('modal-share')">&times;</button>
+            <h2>המעבדה התפנתה!</h2>
+            <p style="text-align: center;">הודעה נוצרה. שתף אותה עם הצוות כדי שיידעו:</p>
+            <div class="share-text-box" id="share-text"></div>
+            <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 10px;">
+                <button onclick="copyShareText()">העתק הודעה</button>
+                <button onclick="sendWhatsApp()" style="background-color: #25D366;">שלח ל-WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div id="modal-schedule" class="modal-overlay">
+        <div class="modal-content organic-box" style="max-width: 700px;">
+            <button class="close-btn" onclick="closeModal('modal-schedule')">&times;</button>
+            <h2>מפת שיבוצים</h2>
+            <p id="schedule-lab-name" style="text-align: center; font-weight: bold; color: var(--water-deep);"></p>
+            
+            <div class="schedule-container">
+                <!-- Dummy Schedule Table -->
+                <table>
+                    <thead>
+                        <tr>
+                            <th>שעה</th>
+                            <th>ראשון</th>
+                            <th>שני</th>
+                            <th>שלישי</th>
+                            <th>רביעי</th>
+                            <th>חמישי</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>08:00-08:45</td>
+                            <td class="slot-taken">ט'1 - מדעים</td>
+                            <td class="slot-free">פנוי</td>
+                            <td class="slot-taken">י'2 - מחשבים</td>
+                            <td class="slot-taken">ח'4 - אנגלית</td>
+                            <td class="slot-free">פנוי</td>
+                        </tr>
+                        <tr>
+                            <td>08:45-09:30</td>
+                            <td class="slot-taken">ט'1 - מדעים</td>
+                            <td class="slot-taken">י'1 - סייבר</td>
+                            <td class="slot-taken">י'2 - מחשבים</td>
+                            <td class="slot-free">פנוי</td>
+                            <td class="slot-free">פנוי</td>
+                        </tr>
+                        <tr>
+                            <td>09:45-10:30</td>
+                            <td class="slot-free">פנוי</td>
+                            <td class="slot-taken">י'1 - סייבר</td>
+                            <td class="slot-free">פנוי</td>
+                            <td class="slot-taken">ז'3 - מתמטיקה</td>
+                            <td class="slot-taken">י"א - הנדסת תוכנה</td>
+                        </tr>
+                        <tr>
+                            <td>10:30-11:15</td>
+                            <td class="slot-taken">ח'2 - גיאוגרפיה</td>
+                            <td class="slot-free">פנוי</td>
+                            <td class="slot-taken">ט'4 - פיזיקה</td>
+                            <td class="slot-taken">ז'3 - מתמטיקה</td>
+                            <td class="slot-taken">י"א - הנדסת תוכנה</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="text-align: center; font-size: 0.8rem; margin-top: 10px;">* נתונים אלו הם להמחשה בלבד ויוחלפו בנתוני קובץ האקסל.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download button to easily get the HTML file -->
+    <a href="#" id="download-link" class="download-btn" onclick="downloadHTML()" download="index.html">
+        📥 הורד את הקובץ ל-GitHub
+    </a>
+
+    <script>
+        // Constants
+        const LOCAL_STORAGE_USER = 'labApp_teacherName';
+        const LOCAL_STORAGE_LABS = 'labApp_labsState';
+
+        // Initial Labs Data Structure
+        const defaultLabs = [
+            { id: 1, name: "מעבדה 1 - שכבה ח' (32 מחשבים)", status: "occupied" },
+            { id: 2, name: "מעבדה 2 - קומה ג' (18 מחשבים)", status: "occupied" },
+            { id: 3, name: "מעבדה 3 - חדר אומנות (15 מחשבים)", status: "occupied" },
+            { id: 4, name: "מעבדה 4 - מכללה (12 מחשבים)", status: "occupied" },
+            { id: 5, name: "מעבדה 5 - כרומבוקים", status: "occupied" }
+        ];
+
+        // State Variables
+        let currentTeacher = '';
+        let labsState = [];
+        let activeActionLabId = null; // To track which lab is being canceled
+
+        // DOM Elements
+        const loginSection = document.getElementById('login-section');
+        const dashboardSection = document.getElementById('dashboard-section');
+        const teacherNameInput = document.getElementById('teacher-name-input');
+        const greetingMsg = document.getElementById('greeting-msg');
+        const labsContainer = document.getElementById('labs-container');
+
+        // Initialize App
+        function initApp() {
+            // Load User
+            currentTeacher = localStorage.getItem(LOCAL_STORAGE_USER);
+            
+            // Load Labs State
+            const savedLabs = localStorage.getItem(LOCAL_STORAGE_LABS);
+            if (savedLabs) {
+                labsState = JSON.parse(savedLabs);
+            } else {
+                labsState = JSON.parse(JSON.stringify(defaultLabs)); // Deep copy default
+                saveLabsState();
+            }
+
+            if (currentTeacher) {
+                showDashboard();
+            } else {
+                showLogin();
+            }
+        }
+
+        function handleLogin() {
+            const name = teacherNameInput.value.trim();
+            if (name === '') {
+                alert('אנא הזן שם תקין.'); // Fallback UI, but keeping it simple
+                return;
+            }
+            currentTeacher = name;
+            localStorage.setItem(LOCAL_STORAGE_USER, currentTeacher);
+            showDashboard();
+        }
+
+        function logout() {
+            localStorage.removeItem(LOCAL_STORAGE_USER);
+            currentTeacher = '';
+            teacherNameInput.value = '';
+            showLogin();
+        }
+
+        function showLogin() {
+            loginSection.style.display = 'block';
+            dashboardSection.style.display = 'none';
+        }
+
+        function showDashboard() {
+            loginSection.style.display = 'none';
+            dashboardSection.style.display = 'block';
+            greetingMsg.textContent = `שלום, ${currentTeacher}`;
+            renderLabs();
+        }
+
+        function saveLabsState() {
+            localStorage.setItem(LOCAL_STORAGE_LABS, JSON.stringify(labsState));
+        }
+
+        function renderLabs() {
+            labsContainer.innerHTML = '';
+            
+            labsState.forEach((lab, index) => {
+                const card = document.createElement('div');
+                const bgClass = `lab-bg-${(index % 5) + 1}`;
+                card.className = `lab-card organic-box ${bgClass}`;
+                
+                const isFree = lab.status === 'free';
+                const statusText = isFree ? 'פנוי' : 'תפוס';
+                const statusClass = isFree ? 'status-free' : 'status-occupied';
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="lab-title">${lab.name}</div>
+                        <div class="lab-status ${statusClass}">${statusText}</div>
+                    </div>
+                    <div class="lab-actions">
+                        ${isFree 
+                            ? `<button class="btn-grab" onclick="grabLab(${lab.id})">תפוס מעבדה</button>` 
+                            : `<button class="btn-cancel" onclick="openCancelModal(${lab.id})">ביטול שיעור</button>`
+                        }
+                        <button class="btn-outline" onclick="openScheduleModal(${lab.id})">צפה במפת שיבוצים</button>
+                    </div>
+                `;
+                labsContainer.appendChild(card);
+            });
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Cancel Flow
+        function openCancelModal(labId) {
+            activeActionLabId = labId;
+            const lab = labsState.find(l => l.id === labId);
+            document.getElementById('cancel-lab-name').textContent = lab.name;
+            
+            // Set current time as default
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const mins = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('cancel-time').value = `${hours}:${mins}`;
+            
+            openModal('modal-cancel');
+        }
+
+        function confirmCancel() {
+            if (!activeActionLabId) return;
+            
+            const time = document.getElementById('cancel-time').value;
+            const labIndex = labsState.findIndex(l => l.id === activeActionLabId);
+            
+            if (labIndex !== -1) {
+                // Update State
+                labsState[labIndex].status = 'free';
+                saveLabsState();
+                renderLabs();
+                
+                // Prepare Share Text
+                const labName = labsState[labIndex].name;
+                const shareText = `היי צוות, ביטלתי שיעור ב${labName} החל משעה ${time}.\nהמעבדה פנויה לשימושכם.\n\n- ${currentTeacher}`;
+                document.getElementById('share-text').textContent = shareText;
+                
+                closeModal('modal-cancel');
+                openModal('modal-share');
+            }
+        }
+
+        // Grab Flow
+        function grabLab(labId) {
+            const labIndex = labsState.findIndex(l => l.id === labId);
+            if (labIndex !== -1) {
+                labsState[labIndex].status = 'occupied';
+                saveLabsState();
+                renderLabs();
+            }
+        }
+
+        // Schedule Flow
+        function openScheduleModal(labId) {
+            const lab = labsState.find(l => l.id === labId);
+            document.getElementById('schedule-lab-name').textContent = `לוז: ${lab.name}`;
+            openModal('modal-schedule');
+        }
+
+        function copyShareText() {
+            const text = document.getElementById('share-text').textContent;
+            
+            // Modern way to copy to clipboard (Fallback to execCommand if needed)
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('ההודעה הועתקה ללוח בהצלחה!');
+                });
+            } else {
+                // Fallback for older browsers / non-HTTPS
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    alert('ההודעה הועתקה ללוח בהצלחה!');
+                } catch (err) {
+                    console.error('Copy failed', err);
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function sendWhatsApp() {
+            const text = document.getElementById('share-text').textContent;
+            const encodedText = encodeURIComponent(text);
+            const whatsappUrl = `https://wa.me/?text=${encodedText}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Download HTML functionality for GitHub uploading
+        function downloadHTML() {
+            // Get the entire HTML content
+            const htmlContent = document.documentElement.outerHTML;
+            // Create a Blob with the HTML content
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            // Create an object URL for the Blob
+            const url = URL.createObjectURL(blob);
+            
+            // Update the link's href to the object URL
+            const downloadLink = document.getElementById('download-link');
+            downloadLink.href = url;
+            
+            // Clean up the object URL after a short delay (so the download can finish)
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+
+        // Run Initialization on load
+        window.onload = initApp;
+
+    </script>
+</body>
+</html>
